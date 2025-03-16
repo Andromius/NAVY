@@ -6,7 +6,8 @@ class NeuralNetwork:
         self.layers = layers
         self.learning_rate = learning_rate
         self.epochs = epochs
-        self.total_error = 0
+        self.final_error = 0
+        self.error_history = []
         self.debug = debug
 
     def forward(self, inputs):
@@ -26,14 +27,15 @@ class NeuralNetwork:
     
     def fit(self, inputs, targets):
         for _ in range(self.epochs):
-            self.total_error = 0
+            self.final_error = 0
             for i in range(len(inputs)):
                 self.forward(inputs[i].copy())
                 self.backward(targets[i].copy())
-                self.total_error += self.calculate_error(targets[i])
+                self.final_error += self.calculate_error(targets[i])
+            self.error_history.append(self.final_error)
             if self.debug and _ % 1000 == 0:
                 print(f"Epoch: {_}")
-                print(f"Total error: {self.total_error}")
+                print(f"Total error: {self.final_error}")
                 print()
 
     def predict(self, inputs):
