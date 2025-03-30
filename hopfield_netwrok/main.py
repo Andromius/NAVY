@@ -9,21 +9,22 @@ class HopfieldNetwork:
     
     def train(self, pattern: np.ndarray):
         self.trained_patterns.append(pattern.copy())
-        print(pattern)
         p = np.array([pattern.copy()])
         dot = np.dot(p.T,p)
         self.weights += dot
         np.fill_diagonal(self.weights, 0)
-        #print(self.weights)
     
     def recall(self, pattern, use_async = False, max_iters = 100):
+        last_pattern = None
+        i = 0
         if use_async:
-            for index in range(self.size):
-                neuron = self.weights[:,index]
-                pattern[index] = np.sign(np.dot(neuron, pattern))
+            while not np.array_equal(last_pattern, pattern) and i < max_iters:
+                last_pattern = np.copy(pattern)
+                for index in range(self.size):
+                    neuron = self.weights[:,index]
+                    pattern[index] = np.sign(np.dot(neuron, pattern))
+                i += 1
         else:
-            last_pattern = None
-            i = 0
             while not np.array_equal(last_pattern, pattern) and i < max_iters:
                 last_pattern = np.copy(pattern)
                 pattern = np.sign(self.weights @ pattern)
@@ -115,13 +116,36 @@ class GUI:
             label.pack()
             canvas = tk.Canvas(frame, width=300, height=300)
             canvas.pack()
-            reshaped_pattern = pattern.reshape(self.grid_size, self.grid_size)  # Oprava
+            reshaped_pattern = pattern.reshape(self.grid_size, self.grid_size)
             for i in range(self.grid_size):
                 for j in range(self.grid_size):
                     x0, y0 = j * self.cell_size, i * self.cell_size
                     x1, y1 = x0 + self.cell_size, y0 + self.cell_size
                     color = "black" if reshaped_pattern[i, j] == 1 else "white"
                     canvas.create_rectangle(x0, y0, x1, y1, fill=color, outline="black")
+
+            details_btn = tk.Button(frame, text="Show Pattern Details", 
+                              command=lambda p=pattern: self.show_pattern_details(p))
+            details_btn.pack()
+            
+            remove_btn = tk.Button(frame, text="Remove Pattern", 
+                                 command=lambda p=pattern, w=top: self.remove_pattern(p, w))
+            remove_btn.pack()
+
+    def remove_pattern(self, pattern, window):
+        self.network.trained_patterns.remove(pattern)
+        window.destroy()
+        self.retrain_network()
+
+    def retrain_network(self):
+        # Reset weights
+        self.network.weights = np.zeros((self.dimension, self.dimension))
+        # Retrain on all remaining patterns
+        for pattern in self.network.trained_patterns:
+            p = np.array([pattern.copy()])
+            dot = np.dot(p.T, p)
+            self.network.weights += dot
+            np.fill_diagonal(self.network.weights, 0)
     
     def reset(self):
         self.pattern = np.ones((self.grid_size, self.grid_size)) * -1
@@ -129,6 +153,38 @@ class GUI:
         for i in range(self.grid_size):
             for j in range(self.grid_size):
                 self.canvas.itemconfig(self.cells[i][j], fill="white")
+    
+    def show_pattern_details(self, pattern):
+        details_window = tk.Toplevel(self.root)
+        details_window.title("Pattern Details")
+        
+        vector_frame = tk.Frame(details_window)
+        vector_frame.pack(pady=10)
+        matrix_frame = tk.Frame(details_window)
+        matrix_frame.pack(pady=10)
+        weight_frame = tk.Frame(details_window)
+        weight_frame.pack(pady=10)
+        
+        tk.Label(vector_frame, text="Vector representation:").pack()
+        vector_text = tk.Text(vector_frame, height=5, width=50)
+        vector_text.pack()
+        vector_text.insert(tk.END, f"{pattern}")
+        vector_text.config(state='disabled')
+        
+        tk.Label(matrix_frame, text="Matrix representation:").pack()
+        matrix_text = tk.Text(matrix_frame, height=5, width=50)
+        matrix_text.pack()
+        matrix_text.insert(tk.END, f"{pattern.reshape(self.grid_size, self.grid_size)}")
+        matrix_text.config(state='disabled')
+        
+        tk.Label(weight_frame, text="Weight matrix contribution:").pack()
+        weight_text = tk.Text(weight_frame, height=10, width=50)
+        weight_text.pack()
+        p = np.array([pattern.copy()])
+        weight_matrix = np.dot(p.T, p)
+        np.fill_diagonal(weight_matrix, 0)
+        weight_text.insert(tk.END, f"{weight_matrix}")
+        weight_text.config(state='disabled')
 
 if __name__ == "__main__":
     root = tk.Tk()
