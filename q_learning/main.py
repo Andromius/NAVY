@@ -3,13 +3,12 @@ import tkinter as tk
 import random
 import time
 
-# Parametry prostředí
-size = 10  # Velikost hrací plochy (size x size)
-cheese_pos = (4, 4)  # Pozice sýra
-obstacles = [(2, 2), (1, 3), (3, 1)]  # Překážky
+size = 10
+cheese_pos = (4, 4)
+obstacles = [(2, 2), (1, 3), (3, 1)]
 
-actions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Nahoru, dolů, vlevo, vpravo
-q_table = np.zeros((size, size, len(actions)))  # Q-tabule
+actions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+q_table = np.zeros((size, size, len(actions)))
 
 # Parametry učení
 alpha = 0.1  # Learning rate
