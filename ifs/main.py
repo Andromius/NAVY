@@ -13,8 +13,6 @@ def visualize_points(points):
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
-    
-    plt.show()
 
 def apply_transform(point: np.ndarray, transform: np.ndarray, translate: np.ndarray) -> np.ndarray:
     point = transform @ point + translate
@@ -35,6 +33,8 @@ def main():
     
     visualize_points(ifs(start_point, iterations, preset_models.MODELS[0]))
     visualize_points(ifs(start_point, iterations, preset_models.MODELS[1]))
+
+    plt.show()
 
 if __name__ == "__main__":
     main()
