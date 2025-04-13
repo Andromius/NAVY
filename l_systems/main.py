@@ -22,7 +22,6 @@ def compute_system(axiom, rules: dict, iterations):
         axiom = builder.getvalue()
         builder.truncate(0)
         builder.seek(0)
-    print("System")
     return axiom
 
 def draw_l_system(result, angle, start_x, start_y, canvas, line_width=1, line_length=5):
@@ -37,10 +36,13 @@ def draw_l_system(result, angle, start_x, start_y, canvas, line_width=1, line_le
     t.pendown()
     stack = []
     
-    print(len(result))
     for i, char in enumerate(result):
         if char == 'F':
             t.forward(line_length)
+        elif char =='b':
+            t.penup()
+            t.forward(line_length)
+            t.pendown()
         elif char == '+':
             t.right(angle)
         elif char == '-':
