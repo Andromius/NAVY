@@ -48,9 +48,3 @@ Tento program implementuje L-systémy s grafickým uživatelským rozhraním pom
   - Scrollování plátna
   - Dynamické překreslování při změně velikosti okna
   - Ošetření chyb při zadávání vlastních pravidel
-
-### Použití
-1. Spuštění programu: `python -m l_systems.main`
-2. Výběr přednastaveného vzoru nebo zadání vlastního
-3. Nastavení parametrů (iterace, délka čáry, tloušťka)
-4. Vykreslení pomocí tlačítka "Draw"
