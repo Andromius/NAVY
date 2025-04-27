@@ -83,9 +83,6 @@ class FractalVisualizer:
         self.canvas_frame.rowconfigure(0, weight=1)
         self.canvas_frame.columnconfigure(0, weight=1)
 
-
-    # ---------- CALCULATIONS ----------
-
     def mandelbrot(self, c, max_iter):
         z = 0
         for n in range(max_iter):
